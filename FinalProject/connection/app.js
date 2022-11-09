@@ -1,8 +1,9 @@
-import http from 'http'
-import fs from 'fs'
-import path from 'path'
-import {executeQuery} from './dbconnection.js';
+import * as http from 'node:http'
+import * as fs from 'fs'
+import * as path from 'path'
+import {displayCollection} from './utils.js';
 import Collection from '../model/collection.js';
+import Controller from '../connection/controllers.js';
 
 function send404(response){
   response.writeHead(404, {'Content-Type': 'text/plain'});
@@ -22,15 +23,44 @@ const server = http.createServer(async (req, res) => {
     let fileurl;
     if(req.url == '/'){
         fileurl = 'pages/homepage.html';
+        res.setHeader('Content-type','text/html')
+        var html = fs.readFileSync(path.resolve('../' + fileurl));
+        res.end(html)
     }
     else if(req.url == '/collections'){
         fileurl = 'pages/collections.html'
-        const collectionResults = await executeQuery("SELECT * FROM collection;");
-        collectionResults.forEach((collection)=> collectionList.push(new Collection(collection.collection_id,collection.name,collection.view_url,collection.price)))
+        res.setHeader('Content-type', 'text/html')
+        await new Controller().getCollection()
+        .then((allCollections)=> {
+            var html = fs.readFileSync(path.resolve('../' + fileurl));
+            res.end(html+displayCollection(allCollections))
+        })
+        .catch((err)=> {
+            console.log("Promise rejection error: "+err);
+            res.end("<h1>ERROR</h1>")
+        })
     }
+    // else if(req.url.match(/\/tracks\?collection_id=([0-9]+)/)){
+    //     fileurl = 'pages/tracks.html'
+    //     res.setHeader('Content-type', 'text/plain')
+    //     await new Controller().tracksOfCollection(req.url.substring(22))
+    //     .then((collectionTracks)=> {
+    //         var html = fs.readFileSync(path.resolve('../' + fileurl));
+    //         res.end(html+displayCollection(allCollections))
+    //     })
+    //     .catch((err)=> {
+    //         console.log("Promise rejection error: "+err);
+    //         res.end("<h1>ERROR</h1>")
+    //     })
+    // }
     else{
       fileurl = req.url;
     }
+    //await readAllFiles(fileurl,res)
+  }
+}).listen(5000);
+
+async function readAllFiles(fileurl,res){
     let filepath = path.resolve('../' + fileurl);
 
     let fileExt = path.extname(filepath);
@@ -49,11 +79,6 @@ const server = http.createServer(async (req, res) => {
 
       res.writeHead(200, {'Content-Type': mimeType});
       fs.createReadStream(filepath).pipe(res);
-
-    });
-
-  }
-}).listen(5000);
+    })
+}
 console.log("Server running at port 5000");
-
-export default collectionList

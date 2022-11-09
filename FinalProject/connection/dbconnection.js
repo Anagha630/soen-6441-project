@@ -1,4 +1,4 @@
-import mysql from 'mysql2'
+import * as mysql from 'mysql2'
 
 var con = mysql.createConnection({
   host: "localhost",

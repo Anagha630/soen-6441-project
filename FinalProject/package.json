@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
+    "http": "^0.0.1-security",
     "mysql2": "^3.0.0-rc.1"
   }
 }

@@ -1,7 +1,11 @@
-import collectionList from "../connection/app.js"
+import Controller from "../connection/controllers.js"
 
-var gridList = `JSON ${collectionList}`
-console.log(collectionList)
+var gridList = `JSON <p>Hi</p>`
+await new Controller().getCollection()
+        .then((allCollections)=> console.log(JSON.stringify(allCollections)))
+        .catch((err)=> {
+            console.log("Promise rejection error: "+err);
+         })
 // var itemNumber = 0;
 // var trackGridItem = json.results.map((ele)=>{
 //     if(ele.wrapperType=="track"){
