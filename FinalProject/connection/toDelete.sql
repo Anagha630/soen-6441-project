@@ -1,7 +1,0 @@
-INSERT into track (name,url,price,release_Date,image,fk_artist_id,fk_collection_id) values
-("Radiohead","https://music.apple.com/us/album/radiohead/1010499557?i=1010499559&uo=4",1.29,"2015-08-21","https://is4-ssl.mzstatic.com/image/thumb/Music5/v4/a9/06/4f/a9064fbf-01c2-1e02-c377-ed47ef914eb3/886445346596.jpg/100x100bb.jpg",2,2),
-("Radiohead","https://music.apple.com/us/album/radiohead/402091159?i=402091266&uo=4",1.29,"2001-04-01","https://is4-ssl.mzstatic.com/image/thumb/Music/v4/3a/6a/fc/3a6afccb-a743-67d1-245f-74e4d6fcd4ca/00801977000624_Cover.jpg/100x100bb.jpg",3,3),
-("Radiohead","https://music.apple.com/us/album/radiohead/290020002?i=290020074&uo=4",0.99,"2008-05-01","https://is4-ssl.mzstatic.com/image/thumb/Music/b5/56/17/mzi.mwujfuww.jpg/100x100bb.jpg",4,4),
-("Radio-Head","https://music.apple.com/us/album/radio-head/15367653?i=15367651&uo=4",0.99,"1997-01-01","https://is3-ssl.mzstatic.com/image/thumb/Music124/v4/00/37/5a/00375a35-6118-1cbe-a91e-ee6de4e7d237/s05.cvsjovsg.tif/100x100bb.jpg",5,5),
-("15 Step","https://music.apple.com/us/album/15-step/1109714933?i=1109715066&uo=4",1.29,"2007-10-10","https://is2-ssl.mzstatic.com/image/thumb/Music112/v4/8c/77/14/8c771429-61c0-af72-418d-c60c376daa83/634904032463.png/100x100bb.jpg",6,6),
-("House of Cards","https://music.apple.com/us/album/15-step/1109714933?i=1109715066&uo=4",1.29,"2007-10-10","https://is2-ssl.mzstatic.com/image/thumb/Music112/v4/8c/77/14/8c771429-61c0-af72-418d-c60c376daa83/634904032463.png/100x100bb.jpg",6,6),

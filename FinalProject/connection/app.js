@@ -2,7 +2,6 @@ import * as http from 'node:http'
 import * as fs from 'fs'
 import * as path from 'path'
 import {displayCollection} from './utils.js';
-import Collection from '../model/collection.js';
 import Controller from '../connection/controllers.js';
 
 function send404(response){
@@ -34,6 +33,32 @@ const server = http.createServer(async (req, res) => {
         .then((allCollections)=> {
             var html = fs.readFileSync(path.resolve('../' + fileurl));
             res.end(html+displayCollection(allCollections))
+        })
+        .catch((err)=> {
+            console.log("Promise rejection error: "+err);
+            res.end("<h1>ERROR</h1>")
+        })
+    }
+    else if(req.url == '/tracks'){
+        fileurl = 'pages/tracks.html'
+        res.setHeader('Content-type', 'text/html')
+        await new Controller().getAllTracks()
+        .then((allTracks)=> {
+            var html = fs.readFileSync(path.resolve('../' + fileurl));
+            res.end(html+displayCollection(allTracks))
+        })
+        .catch((err)=> {
+            console.log("Promise rejection error: "+err);
+            res.end("<h1>ERROR</h1>")
+        })
+    }
+    else if(req.url == '/artists'){
+        fileurl = 'pages/artists.html'
+        res.setHeader('Content-type', 'text/html')
+        await new Controller().getArtist()
+        .then((allArtists)=> {
+            var html = fs.readFileSync(path.resolve('../' + fileurl));
+            res.end(html+displayCollection(allArtists))
         })
         .catch((err)=> {
             console.log("Promise rejection error: "+err);

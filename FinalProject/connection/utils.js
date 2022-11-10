@@ -5,8 +5,8 @@ export function displayCollection(data){
             <div id="grid-item">
                 <img class="grid-image" src="${ele.image}" href="#"></img>
                 <h4 class="grid-text">${ele.name}</h4>
-                <a href="/orders.html">Order</a>
-                <a href="/tracks.html" href='/tracks?collection_id=${ele.collection_id}'}>View</a>
+                <a href="/orders.html" class="first-link">Order</a>
+                <a href="/tracks.html" class="second-ink" href='/tracks?collection_id=${ele.collection_id}'}>View</a>
             </div>
         `
     })
