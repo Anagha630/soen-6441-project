@@ -1,6 +1,7 @@
 import * as http from 'node:http'
 import * as fs from 'fs'
 import * as path from 'path'
+import * as url from 'url'
 import {displayCollection} from './utils.js';
 import Controller from '../connection/controllers.js';
 
@@ -60,11 +61,54 @@ const server = http.createServer(async (req, res) => {
             var html = fs.readFileSync(path.resolve('../' + fileurl));
             res.end(html+displayCollection(allArtists))
         })
+    }
+    else if(req.url.match(/\/search\?*/)){
+      const params = url.parse(req.url, true).query;
+      var queryString = "SELECT * FROM track WHERE ";
+      var paramLength = Object.keys(params).length;
+      var i = 1;
+      if(params.track!=""){
+        if(i!=1){
+          queryString = queryString + " AND ";
+        }
+        queryString = queryString+"name = '" + params.track + "'";
+        i++;
+      }
+      if(params.artist!=""){
+        if(i!=1){
+          queryString = queryString + " AND ";
+        }
+        queryString = queryString+"fk_artist_id = (SELECT artist_id FROM artist where name = '"+params.artist+"')";
+        i++;
+      }
+      if(params.collection!=""){
+        if(i!=1){
+          queryString = queryString + " AND ";
+        }
+        queryString = queryString+"fk_collection_id = (SELECT collection_id FROM collection where name = '"+params.collection+"')";
+        i++;
+      }
+      if(params.year!=""){
+        if(i!=1){
+          queryString = queryString + " AND ";
+        }
+        queryString = queryString+"release_date BETWEEN '" + params.year + "/01/01' AND '"+ params.year + "/12/31'";
+        i++;
+      }
+      queryString = queryString + ";";
+
+      fileurl = 'pages/tracks.html'
+        res.setHeader('Content-type', 'text/html')
+        await new Controller().getTracksByParams(queryString)
+        .then((allTracks)=> {
+            var html = fs.readFileSync(path.resolve('../' + fileurl));
+            res.end(html+displayCollection(allTracks));
+        })
         .catch((err)=> {
             console.log("Promise rejection error: "+err);
             res.end("<h1>ERROR</h1>")
         })
-    }
+      }
     // else if(req.url.match(/\/tracks\?collection_id=([0-9]+)/)){
     //     fileurl = 'pages/tracks.html'
     //     res.setHeader('Content-type', 'text/plain')
