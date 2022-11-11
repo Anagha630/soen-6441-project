@@ -1,4 +1,4 @@
-import {executeQuery} from './dbconnection.js';
+import {executeQuery} from '../model/dbconnection.js';
 import Collection from '../model/collection.js';
 import Track from '../model/track.js';
 import Artist from '../model/artist.js'
