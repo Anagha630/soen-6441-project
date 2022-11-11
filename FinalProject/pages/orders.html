@@ -1,20 +1,43 @@
 <!DOCTYPE html>
-<html>
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> Place Order </title>
+    <title> Tracks Page </title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../styles/common.css">
-    <link rel="stylesheet" href="../styles/homepage.css">
-    <link rel="stylesheet" href="../styles/orderList.css">
+    <style>
+        .grid-row{
+            display: flex;
+            margin-bottom: 130px;
+        }
+        #grid-item{
+            flex: 33.33%;
+            height: 200px;
+            padding: 10px;
+            margin: 45px;
+            text-align: center;
+        }
+        #grid-item a{
+            color: purple;
+            font-size: 20px;
+            margin-right: 40px;
+        }
+        .second-link{
+            display: none;
+        }
+        .grid-image{
+            height: 200px;
+            width: 200px;
+        }
+        h1{
+            text-align: center;
+            margin: 50px 0 50px 0;
+        }
+        .first-link, .second-link{
+            display: none;
+        }
+    </style>
 </head>
-
-<body>
-    <div id="header"></div>
-    <div id="orderList"></div>
-    <script src="../views/header.js"></script>
-    <script src="../views/orderList.js"></script>
-</body>
-
-</html>
+    <h1>Orders</h1>
+    <h1>You have spent $<span id="total"></span> on your orders.</h1>
+    <div id='track_grid'>
+    </div>

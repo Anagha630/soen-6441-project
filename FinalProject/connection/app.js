@@ -2,24 +2,15 @@ import * as http from 'node:http'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as url from 'url'
-import {displayCollection} from './utils.js';
+import {displayGrid, displayList} from './utils.js';
 import Controller from '../connection/controllers.js';
 
-function send404(response){
-  response.writeHead(404, {'Content-Type': 'text/plain'});
-  response.write('Error 404: Resource not found.');
-  response.end();
-}
+var user_name = ""
 
-const mimeLookup = {
-  '.js': 'application/javascript',
-  '.html': 'text/html',
-  '.css': 'text/css'
-};
-var collectionList = [];
 const server = http.createServer(async (req, res) => {
   if(req.method == 'GET'){
 
+    var user_id;
     let fileurl;
     if(req.url == '/'){
         fileurl = 'pages/homepage.html';
@@ -27,41 +18,152 @@ const server = http.createServer(async (req, res) => {
         var html = fs.readFileSync(path.resolve('../' + fileurl));
         res.end(html)
     }
-    else if(req.url == '/collections'){
+
+    else if(req.url == '/allcollections'){
         fileurl = 'pages/collections.html'
         res.setHeader('Content-type', 'text/html')
         await new Controller().getCollection()
         .then((allCollections)=> {
             var html = fs.readFileSync(path.resolve('../' + fileurl));
-            res.end(html+displayCollection(allCollections))
+            res.end(html+displayGrid(allCollections))
         })
         .catch((err)=> {
             console.log("Promise rejection error: "+err);
             res.end("<h1>ERROR</h1>")
         })
     }
-    else if(req.url == '/tracks'){
+
+    else if(req.url == '/alltracks'){
         fileurl = 'pages/tracks.html'
         res.setHeader('Content-type', 'text/html')
         await new Controller().getAllTracks()
         .then((allTracks)=> {
             var html = fs.readFileSync(path.resolve('../' + fileurl));
-            res.end(html+displayCollection(allTracks))
+            res.end(html+displayGrid(allTracks))
         })
         .catch((err)=> {
             console.log("Promise rejection error: "+err);
             res.end("<h1>ERROR</h1>")
         })
     }
-    else if(req.url == '/artists'){
+
+    else if(req.url == '/allartists'){
         fileurl = 'pages/artists.html'
         res.setHeader('Content-type', 'text/html')
         await new Controller().getArtist()
         .then((allArtists)=> {
             var html = fs.readFileSync(path.resolve('../' + fileurl));
-            res.end(html+displayCollection(allArtists))
+            res.end(html+displayGrid(allArtists))
+        })
+        .catch((err)=> {
+            console.log("Promise rejection error: "+err);
+            res.end("<h1>ERROR</h1>")
         })
     }
+
+    else if(req.url.match(/\/tracks\?/)){
+        fileurl = 'pages/tracks.html'
+        const queryObject = url.parse(req.url, true).query;
+        res.setHeader('Content-type', 'text/html')
+        if(req.url.includes("collection_id")){
+            await new Controller().getTracksOfCollection(queryObject.collection_id)
+            .then((collectionTracks)=> {
+                var html = fs.readFileSync(path.resolve('../' + fileurl));
+                res.end(html+displayGrid(collectionTracks))
+            })
+            .catch((err)=> {
+                console.log("Promise rejection error: "+err);
+                res.end("<h1>ERROR</h1>")
+            })
+        }
+        else if(req.url.includes("artist_id")){
+            await new Controller().getTracksOfArtist(queryObject.artist_id)
+            .then((artistTracks)=> {
+                var html = fs.readFileSync(path.resolve('../' + fileurl));
+                res.end(html+displayGrid(artistTracks))
+            })
+            .catch((err)=> {
+                console.log("Promise rejection error: "+err);
+                res.end("<h1>ERROR</h1>")
+            })
+        }
+    }
+
+    else if(req.url.match(/\/placeOrders\?/)){
+        fileurl = 'pages/place-order.html'
+        const queryObject = url.parse(req.url, true).query;
+        res.setHeader('Content-type', 'text/html')
+        if(req.url.includes("collection_id")){
+            await new Controller().getTracksOfCollection(queryObject.collection_id)
+            .then((collectionTracks)=> {
+                var html = fs.readFileSync(path.resolve('../' + fileurl));
+                res.end(html+displayList(collectionTracks))
+            })
+            .catch((err)=> {
+                console.log("Promise rejection error: "+err);
+                res.end("<h1>ERROR</h1>")
+            })
+        }
+        else if(req.url.includes("track_id")){
+            await new Controller().getTrack(queryObject.track_id)
+            .then((tracks)=> {
+                var html = fs.readFileSync(path.resolve('../' + fileurl));
+                res.end(html+displayList(tracks))
+            })
+            .catch((err)=> {
+                console.log("Promise rejection error: "+err);
+                res.end("<h1>ERROR</h1>")
+            })
+        }
+    }
+
+    else if(req.url.match(/\/orders\?/)){
+        const queryObject = url.parse(req.url, true).query;
+        fileurl = 'pages/orders.html'
+        res.setHeader('Content-type', 'text/html')
+        await new Controller().getAllOrders(queryObject.username)
+        .then((allTracksArray)=> {
+            var html = fs.readFileSync(path.resolve('../' + fileurl));
+            var tracks = allTracksArray[0]
+            var totalPrice = allTracksArray[1]
+            res.end(html+displayGrid(tracks,totalPrice))
+        })
+        .catch((err)=> {
+            console.log("Promise rejection error: "+err);
+            res.end("<h1>ERROR</h1>")
+        })
+    }
+
+    else if(req.url.match(/\/addOrder\?/)){
+        const queryObject = url.parse(req.url, true).query;
+        fileurl = 'pages/place-order.html'
+        res.setHeader('Content-type', 'text/html')
+        await new Controller().addTrackToOrders(queryObject.track_id, queryObject.username)
+        .then((msg)=> {
+            if(msg=="success"){
+                res.end(`<h1 style="color:green">Track successfully added to Orders!</h1>`)
+            }
+            else res.end(`<h1 style="color:red">Track is already in your Orders!</h1>`)
+        })
+        .catch((err)=> {
+            console.log("Promise rejection error: "+err);
+            res.end("<h1>ERROR</h1>")
+        })
+    }
+
+    else if(req.url.match(/\/deleteOrder\?/)){
+        const queryObject = url.parse(req.url, true).query;
+        fileurl = 'pages/orders.html'
+        res.setHeader('Content-type', 'text/html')
+        await new Controller().deleteFromOrder(queryObject.track_id)
+        .then((msg)=> {
+            if(msg=="success"){
+                res.end(`<h1 style="color:green">Track successfully deleted from Orders!</h1>`)
+            }
+            else res.end(`<h1 style="color:red">Something went wrong! Try again!`)
+        })
+    }
+    
     else if(req.url.match(/\/search\?*/)){
       const params = url.parse(req.url, true).query;
       var queryString = "SELECT * FROM track WHERE ";
@@ -102,52 +204,17 @@ const server = http.createServer(async (req, res) => {
         await new Controller().getTracksByParams(queryString)
         .then((allTracks)=> {
             var html = fs.readFileSync(path.resolve('../' + fileurl));
-            res.end(html+displayCollection(allTracks));
+            res.end(html+displayGrid(allTracks));
         })
         .catch((err)=> {
             console.log("Promise rejection error: "+err);
             res.end("<h1>ERROR</h1>")
         })
-      }
-    // else if(req.url.match(/\/tracks\?collection_id=([0-9]+)/)){
-    //     fileurl = 'pages/tracks.html'
-    //     res.setHeader('Content-type', 'text/plain')
-    //     await new Controller().tracksOfCollection(req.url.substring(22))
-    //     .then((collectionTracks)=> {
-    //         var html = fs.readFileSync(path.resolve('../' + fileurl));
-    //         res.end(html+displayCollection(allCollections))
-    //     })
-    //     .catch((err)=> {
-    //         console.log("Promise rejection error: "+err);
-    //         res.end("<h1>ERROR</h1>")
-    //     })
-    // }
+    }
     else{
       fileurl = req.url;
     }
-    //await readAllFiles(fileurl,res)
   }
 }).listen(5000);
 
-async function readAllFiles(fileurl,res){
-    let filepath = path.resolve('../' + fileurl);
-
-    let fileExt = path.extname(filepath);
-    let mimeType = mimeLookup[fileExt];
-
-    if(!mimeType) {
-      send404(res);
-      return;
-    }
-
-    fs.exists(filepath, (exists) => {
-      if(!exists){
-        send404(res);
-        return;
-      }
-
-      res.writeHead(200, {'Content-Type': mimeType});
-      fs.createReadStream(filepath).pipe(res);
-    })
-}
 console.log("Server running at port 5000");
