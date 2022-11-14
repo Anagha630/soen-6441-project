@@ -16,7 +16,7 @@ export default class Controllers {
     }
     async getCollection() {
         const collectionResults = await executeQuery("SELECT * FROM collection;");
-        collectionResults.forEach((collection)=> this.collectionList.push(new Collection(collection.collection_id,collection.name,collection.view_url,collection.price,collection.image)))
+        collectionResults.forEach((collection)=> this.collectionList.push(new Collection(collection.collection_id,collection.name,collection.price,collection.image)))
         return new Promise((resolve, reject) => resolve(this.collectionList));
     }
 
