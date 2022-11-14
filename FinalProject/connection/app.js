@@ -36,7 +36,8 @@ const server = http.createServer(async (req, res) => {
     else if(req.url == '/alltracks'){
         fileurl = 'pages/tracks.html'
         res.setHeader('Content-type', 'text/html')
-        await new Controller().getAllTracks()
+        var queryString = "SELECT * FROM track;";
+        await new Controller().getTracksByParams(queryString)
         .then((allTracks)=> {
             var html = fs.readFileSync(path.resolve('../' + fileurl));
             res.end(html+displayGrid(allTracks))
@@ -66,7 +67,8 @@ const server = http.createServer(async (req, res) => {
         const queryObject = url.parse(req.url, true).query;
         res.setHeader('Content-type', 'text/html')
         if(req.url.includes("collection_id")){
-            await new Controller().getTracksOfCollection(queryObject.collection_id)
+            var queryString = "SELECT * FROM track WHERE fk_collection_id="+queryObject.collection_id+";"
+            await new Controller().getTracksByParams(queryString)
             .then((collectionTracks)=> {
                 var html = fs.readFileSync(path.resolve('../' + fileurl));
                 res.end(html+displayGrid(collectionTracks))
@@ -77,7 +79,8 @@ const server = http.createServer(async (req, res) => {
             })
         }
         else if(req.url.includes("artist_id")){
-            await new Controller().getTracksOfArtist(queryObject.artist_id)
+            var queryString = "SELECT * FROM track WHERE fk_artist_id="+queryObject.artist_id+";"
+            await new Controller().getTracksByParams(queryString)
             .then((artistTracks)=> {
                 var html = fs.readFileSync(path.resolve('../' + fileurl));
                 res.end(html+displayGrid(artistTracks))
@@ -94,7 +97,8 @@ const server = http.createServer(async (req, res) => {
         const queryObject = url.parse(req.url, true).query;
         res.setHeader('Content-type', 'text/html')
         if(req.url.includes("collection_id")){
-            await new Controller().getTracksOfCollection(queryObject.collection_id)
+            var queryString = "SELECT * FROM track WHERE fk_collection_id="+queryObject.collection_id+";"
+            await new Controller().getTracksByParams(queryString)
             .then((collectionTracks)=> {
                 var html = fs.readFileSync(path.resolve('../' + fileurl));
                 res.end(html+displayList(collectionTracks))
@@ -105,7 +109,8 @@ const server = http.createServer(async (req, res) => {
             })
         }
         else if(req.url.includes("track_id")){
-            await new Controller().getTrack(queryObject.track_id)
+            var queryString = "SELECT * FROM track WHERE track_id="+queryObject.track_id+";"
+            await new Controller().getTracksByParams(queryString)
             .then((tracks)=> {
                 var html = fs.readFileSync(path.resolve('../' + fileurl));
                 res.end(html+displayList(tracks))

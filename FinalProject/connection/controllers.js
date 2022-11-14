@@ -9,7 +9,6 @@ export default class Controllers {
         this.collectionList = [];
         this.trackList = [];
         this.artistList = [];
-        //this.trackOfCollectionList = [];
     }
     async getUserId(username){
         const userid = await executeQuery(`SELECT user_id FROM user WHERE name="${username}";`);
@@ -19,12 +18,6 @@ export default class Controllers {
         const collectionResults = await executeQuery("SELECT * FROM collection;");
         collectionResults.forEach((collection)=> this.collectionList.push(new Collection(collection.collection_id,collection.name,collection.view_url,collection.price,collection.image)))
         return new Promise((resolve, reject) => resolve(this.collectionList));
-    }
-
-    async getAllTracks() {
-        const trackResults = await executeQuery("SELECT * FROM track;");
-        trackResults.forEach((track)=> this.trackList.push(new Track(track.track_id,track.name,track.price,track.release_date,track.image,track.artist_id,track.collection_id)))
-        return new Promise((resolve, reject) => resolve(this.trackList));
     }
 
     async getArtist() {
@@ -39,27 +32,6 @@ export default class Controllers {
         return new Promise((resolve,reject) => resolve(this.trackList));
     }
     
-
-    async getTracksOfCollection(collection_id) {
-        const tracksOfCollectionResults = await executeQuery("SELECT * FROM track WHERE fk_collection_id="+collection_id+";")
-        tracksOfCollectionResults.forEach((track)=> this.trackList.push(new Track(track.track_id,track.name,track.price,track.release_date,track.image,track.artist_id,track.collection_id)))
-        return new Promise((resolve, reject) => resolve(this.trackList));
-    }
-
-    async getTracksOfArtist(artist_id) {
-        console.log("Artist: "+artist_id);
-        const tracksOfArtistResults = await executeQuery("SELECT * FROM track WHERE fk_artist_id="+artist_id+";")
-        console.log(tracksOfArtistResults)
-        tracksOfArtistResults.forEach((track)=> this.trackList.push(new Track(track.track_id,track.name,track.price,track.release_date,track.image,track.artist_id,track.collection_id)))
-        return new Promise((resolve, reject) => resolve(this.trackList));
-    }
-
-    async getTrack(track_id){
-        const singleTrack = await executeQuery("SELECT * FROM track WHERE track_id="+track_id+";")
-        singleTrack.forEach((track)=> this.trackList.push(new Track(track.track_id,track.name,track.price,track.release_date,track.image,track.artist_id,track.collection_id)))
-        return new Promise((resolve, reject) => resolve(this.trackList));
-    }
-
     async addTrackToOrders(track_id, username) {
         const userid = await executeQuery(`SELECT user_id from user WHERE name="${username}";`)
         var message="fail"
